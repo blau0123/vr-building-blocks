@@ -77,6 +77,13 @@ public class VirtualHand : MonoBehaviour
             movingSlider = false;
             prePosSlider = new Vector3(0, 0, 0);
         }
+
+        if (rotatingDial && !OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
+        {
+            // Done rotating dial, so reset the position tracking
+            rotatingDial = false;
+            preRotDial = new Vector3(0, 0, 0);
+        }
     }
 
 
@@ -169,10 +176,7 @@ public class VirtualHand : MonoBehaviour
         {
             // Rotate the dial
             currRotDial = transform.rotation.eulerAngles;
-            /* On trigger enter, we would've just started to rotate, so previous rot = curr rot
-            if (preRotDial.x == 0 && preRotDial.y == 0 && preRotDial.z == 0)
-                preRotDial = currRotDial;
-            */
+            // On trigger enter, we would've just started to rotate, so previous rot = curr rot
             if (!rotatingDial)
             {
                 preRotDial = currRotDial;
@@ -187,15 +191,20 @@ public class VirtualHand : MonoBehaviour
             // Scale the selected item
             if (mostRecentSelected != null)
             {
-                float scaleAmount = rotationAmount * 0.01f;
+                float scaleAmount = rotationAmount * 0.001f;
                 // If currRotDial.y is greater, then we are turning clockwise (increase scale)
                 if (currRotDial.y > preRotDial.y)
                 {
-                    mostRecentSelected.transform.localScale += new Vector3(scaleAmount, scaleAmount, scaleAmount);
+                    // Don't let the scale get too big
+                    if (mostRecentSelected.transform.localScale.x < 1.5f)
+                        mostRecentSelected.transform.localScale += new Vector3(scaleAmount, scaleAmount, scaleAmount);
                 }
                 else
                 {
-                    mostRecentSelected.transform.localScale -= new Vector3(scaleAmount, scaleAmount, scaleAmount);
+                    /* Don't let the scale get too small
+                    if (mostRecentSelected.transform.localScale.x > 0.5f)
+                        mostRecentSelected.transform.localScale += new Vector3(scaleAmount, scaleAmount, scaleAmount);
+                    */
                 }
             }
 
