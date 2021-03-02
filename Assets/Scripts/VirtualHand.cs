@@ -25,6 +25,7 @@ public class VirtualHand : MonoBehaviour
     public GameObject cubePrefab;
     public GameObject spherePrefab;
     public GameObject cylinderPrefab;
+    public GameObject cuboidPrefab;
 
     public Sprite highlightedMaterialImg;
     public Sprite normalMaterialImg;
@@ -76,7 +77,7 @@ public class VirtualHand : MonoBehaviour
     {
         string objTag = other.gameObject.tag;
         // When hover one of the radial menu items, highlight it by changing material of the button
-        if (hoveredMenuItem == null && (objTag == "SquareButton" || objTag == "SphereButton" || objTag == "CylinderButton"))
+        if (hoveredMenuItem == null && (objTag == "SquareButton" || objTag == "SphereButton" || objTag == "CylinderButton" || objTag == "CuboidButton"))
         {
             hoveredMenuItem = other.gameObject;
             other.gameObject.GetComponent<Image>().sprite = highlightedMaterialImg;
@@ -88,7 +89,7 @@ public class VirtualHand : MonoBehaviour
         string objTag = other.gameObject.tag;
         // If hovering a menu item, then changed which item the user is hovering (Without ending the collision
         // with the menu), then need to update the hover
-        if (hoveredMenuItem == null && (objTag == "SquareButton" || objTag == "SphereButton" || objTag == "CylinderButton"))
+        if (hoveredMenuItem == null && (objTag == "SquareButton" || objTag == "SphereButton" || objTag == "CylinderButton" || objTag == "CuboidButton"))
         {
             hoveredMenuItem = other.gameObject;
             other.gameObject.GetComponent<Image>().sprite = highlightedMaterialImg;
@@ -137,6 +138,9 @@ public class VirtualHand : MonoBehaviour
 
         if (collidedObj == null && other.gameObject.tag == "CylinderButton" && OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
             InstantiateAndPickUpObject("cylinder");
+
+        if (collidedObj == null && other.gameObject.tag == "CuboidButton" && OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
+            InstantiateAndPickUpObject("cuboid");
     }
 
     private void OnTriggerExit(Collider other)
@@ -181,6 +185,8 @@ public class VirtualHand : MonoBehaviour
             objInst = Instantiate(cubePrefab, transform.position, Quaternion.identity);
         else if (type == "cylinder")
             objInst = Instantiate(cylinderPrefab, transform.position, Quaternion.identity);
+        else if (type == "cuboid")
+            objInst = Instantiate(cuboidPrefab, transform.position, Quaternion.identity);
         else
             objInst = Instantiate(spherePrefab, transform.position, Quaternion.identity);
 

@@ -9,6 +9,7 @@ TagManager:
   - SquareButton
   - SphereButton
   - CylinderButton
+  - CuboidButton
   layers:
   - Default
   - TransparentFX
