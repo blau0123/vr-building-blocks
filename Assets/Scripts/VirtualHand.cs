@@ -195,16 +195,15 @@ public class VirtualHand : MonoBehaviour
                 // If currRotDial.y is greater, then we are turning clockwise (increase scale)
                 if (currRotDial.y > preRotDial.y)
                 {
-                    // Don't let the scale get too big
-                    if (mostRecentSelected.transform.localScale.x < 1.5f)
+                    // Don't let the scale get too big (check z because all objects with same starting z scaling)
+                    if (mostRecentSelected.transform.localScale.z < 0.3f)
                         mostRecentSelected.transform.localScale += new Vector3(scaleAmount, scaleAmount, scaleAmount);
                 }
                 else
                 {
-                    /* Don't let the scale get too small
-                    if (mostRecentSelected.transform.localScale.x > 0.5f)
+                    // Don't let the scale get too small
+                    if (mostRecentSelected.transform.localScale.z > 0.1f)
                         mostRecentSelected.transform.localScale += new Vector3(scaleAmount, scaleAmount, scaleAmount);
-                    */
                 }
             }
 

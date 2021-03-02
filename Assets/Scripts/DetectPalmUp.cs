@@ -26,8 +26,12 @@ public class DetectPalmUp : MonoBehaviour
         {
             radialMenu.SetActive(true);
 
-            // Make the radial menu always look at the user
-            // radialMenu.transform.LookAt(userHead.transform);
+            /* Make the radial menu always look at the user
+            radialMenu.transform.LookAt(userHead.transform);
+            // Rotate the arrow because lookat will make the arrow point up and rotate
+            // Along the z axis (make the forward vector, not up, point towards target)
+            radialMenu.transform.Rotate(Vector3.right * 90);
+            */
         }
         else
             radialMenu.SetActive(false);
