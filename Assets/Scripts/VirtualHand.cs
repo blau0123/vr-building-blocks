@@ -12,11 +12,18 @@ public class VirtualHand : MonoBehaviour
     private Vector3 objVelocity;
     private Vector3 prePosition;
     private Vector3 currPosition;
+    // Set to true if moving an object, so can't move 2 objects at once
+    private bool movingObject = false;
+
+    // Slider
     private Vector3 prePosSlider;
     private Vector3 currPosSlider;
     private bool movingSlider = false;
-    // Set to true if moving an object, so can't move 2 objects at once
-    private bool movingObject = false;
+
+    // Scale dial
+    private Vector3 preRotDial;
+    private Vector3 currRotDial;
+    private bool rotatingDial = false;
 
     public GameObject rHandPrefab;
     public GameObject gravitySlider;
@@ -82,8 +89,19 @@ public class VirtualHand : MonoBehaviour
             hoveredMenuItem = other.gameObject;
             other.gameObject.GetComponent<Image>().sprite = highlightedMaterialImg;
         }
-    }
 
+        // When hover the slider, want to highlight it so the user knows they are touching the slider
+        if (objTag == "Slider")
+            other.gameObject.GetComponent<Outline>().OutlineWidth = 5;
+
+        // When hover any of the color buttons, highlight it so the user knows they are touching the color button
+        if (objTag == "ColorButton")
+            other.gameObject.GetComponent<Outline>().OutlineWidth = 5;
+
+        if (objTag == "ScaleDial")
+            other.gameObject.GetComponent<Outline>().OutlineWidth = 5;
+    }
+    
     private void OnTriggerStay(Collider other)
     {
         string objTag = other.gameObject.tag;
@@ -141,20 +159,80 @@ public class VirtualHand : MonoBehaviour
 
         if (collidedObj == null && other.gameObject.tag == "CuboidButton" && OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
             InstantiateAndPickUpObject("cuboid");
+
+        // If click on a color button, change the color of the selected object to be the color of the button
+        if (mostRecentSelected != null && other.gameObject.tag == "ColorButton" && OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
+            mostRecentSelected.GetComponent<Renderer>().material.color = other.gameObject.GetComponent<Renderer>().material.color;
+
+        // If rotating the scale dial, only check the user's hands y rotation and rotate the scale by that much
+        if (other.gameObject.tag == "ScaleDial" && OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
+        {
+            // Rotate the dial
+            currRotDial = transform.rotation.eulerAngles;
+            /* On trigger enter, we would've just started to rotate, so previous rot = curr rot
+            if (preRotDial.x == 0 && preRotDial.y == 0 && preRotDial.z == 0)
+                preRotDial = currRotDial;
+            */
+            if (!rotatingDial)
+            {
+                preRotDial = currRotDial;
+                rotatingDial = true;
+            }
+
+            float rotationAmount = currRotDial.y - preRotDial.y;
+            ScaleDial scaleDialScript = other.gameObject.GetComponent<ScaleDial>();
+            if (scaleDialScript != null)
+                scaleDialScript.UpdateDialOrientation(rotationAmount);
+
+            // Scale the selected item
+            if (mostRecentSelected != null)
+            {
+                float scaleAmount = rotationAmount * 0.01f;
+                // If currRotDial.y is greater, then we are turning clockwise (increase scale)
+                if (currRotDial.y > preRotDial.y)
+                {
+                    mostRecentSelected.transform.localScale += new Vector3(scaleAmount, scaleAmount, scaleAmount);
+                }
+                else
+                {
+                    mostRecentSelected.transform.localScale -= new Vector3(scaleAmount, scaleAmount, scaleAmount);
+                }
+            }
+
+            preRotDial = currRotDial;
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
+        string objTag = other.gameObject.tag;
+
         // When stop hovering one of the menu items, then unhighlight the item
-        if (other.gameObject.tag == hoveredMenuItem.tag)
+        if (objTag == hoveredMenuItem.tag)
         {
             hoveredMenuItem.GetComponent<Image>().sprite = normalMaterialImg;
             hoveredMenuItem = null;
         }
 
+        // If not colliding with the dial anymore, reset the previous position tracker
+        if (objTag == "ScaleDial")
+        {
+            other.gameObject.GetComponent<Outline>().OutlineWidth = 0;
+            preRotDial = new Vector3(0, 0, 0);
+            rotatingDial = false;
+        }
+
         // If trigger left, then reset position trackers
-        if (other.gameObject.tag == "Slider")
+        if (objTag == "Slider")
+        {
+            // Unhighlight the slider if we aren't colliding with it anymore
+            other.gameObject.GetComponent<Outline>().OutlineWidth = 0;
             prePosSlider = new Vector3(0, 0, 0);
+        }
+
+        // If not colliding with the color buttons any more, unhighlight them
+        if (objTag == "ColorButton")
+            other.gameObject.GetComponent<Outline>().OutlineWidth = 0;
     }
 
     private void PickUpObject(Collider other)

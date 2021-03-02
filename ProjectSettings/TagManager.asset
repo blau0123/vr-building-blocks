@@ -10,6 +10,8 @@ TagManager:
   - SphereButton
   - CylinderButton
   - CuboidButton
+  - ColorButton
+  - ScaleDial
   layers:
   - Default
   - TransparentFX
