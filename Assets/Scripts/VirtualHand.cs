@@ -97,7 +97,7 @@ public class VirtualHand : MonoBehaviour
             other.gameObject.GetComponent<Image>().sprite = highlightedMaterialImg;
         }
 
-        // When hover the slider, want to highlight it so the user knows they are touching the slider
+        /* When hover the slider, want to highlight it so the user knows they are touching the slider
         if (objTag == "Slider")
             other.gameObject.GetComponent<Outline>().OutlineWidth = 5;
 
@@ -107,6 +107,7 @@ public class VirtualHand : MonoBehaviour
 
         if (objTag == "ScaleDial")
             other.gameObject.GetComponent<Outline>().OutlineWidth = 5;
+        */
     }
     
     private void OnTriggerStay(Collider other)
@@ -193,10 +194,10 @@ public class VirtualHand : MonoBehaviour
             {
                 // Will be negative if counterclockwise, positive if clockwise
                 float scaleAmount = rotationAmount * 0.0005f;
-                if (scaleAmount > 0.02f)
-                    scaleAmount = 0.02f;
-                if (scaleAmount < -0.02f)
-                    scaleAmount = -0.02f;
+                if (scaleAmount > 0.03f)
+                    scaleAmount = 0.03f;
+                if (scaleAmount < -0.03f)
+                    scaleAmount = -0.03f;
 
                 if (rotationAmount > 0)
                 {
@@ -229,7 +230,7 @@ public class VirtualHand : MonoBehaviour
         // If not colliding with the dial anymore, reset the previous position tracker
         if (objTag == "ScaleDial")
         {
-            other.gameObject.GetComponent<Outline>().OutlineWidth = 0;
+            // other.gameObject.GetComponent<Outline>().OutlineWidth = 0;
             preRotDial = new Vector3(0, 0, 0);
             rotatingDial = false;
         }
@@ -238,13 +239,15 @@ public class VirtualHand : MonoBehaviour
         if (objTag == "Slider")
         {
             // Unhighlight the slider if we aren't colliding with it anymore
-            other.gameObject.GetComponent<Outline>().OutlineWidth = 0;
+            // other.gameObject.GetComponent<Outline>().OutlineWidth = 0;
             prePosSlider = new Vector3(0, 0, 0);
         }
 
         // If not colliding with the color buttons any more, unhighlight them
         if (objTag == "ColorButton")
-            other.gameObject.GetComponent<Outline>().OutlineWidth = 0;
+        {
+            // other.gameObject.GetComponent<Outline>().OutlineWidth = 0;
+        }
     }
 
     private void PickUpObject(Collider other)
