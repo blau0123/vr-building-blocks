@@ -191,17 +191,21 @@ public class VirtualHand : MonoBehaviour
             // Scale the selected item
             if (mostRecentSelected != null)
             {
-                float scaleAmount = rotationAmount * 0.001f;
-                // If currRotDial.y is greater, then we are turning clockwise (increase scale)
-                if (currRotDial.y > preRotDial.y)
+                // Will be negative if counterclockwise, positive if clockwise
+                float scaleAmount = rotationAmount * 0.0005f;
+                if (scaleAmount > 0.02f)
+                    scaleAmount = 0.02f;
+                if (scaleAmount < -0.02f)
+                    scaleAmount = -0.02f;
+
+                if (rotationAmount > 0)
                 {
-                    // Don't let the scale get too big (check z because all objects with same starting z scaling)
-                    if (mostRecentSelected.transform.localScale.z < 0.3f)
+                    // Since we are increasing the scale, want to make sure it doesn't get too big (check z because all objects with same starting z scaling)
+                    if (mostRecentSelected.transform.localScale.z < 0.4f)
                         mostRecentSelected.transform.localScale += new Vector3(scaleAmount, scaleAmount, scaleAmount);
                 }
                 else
                 {
-                    // Don't let the scale get too small
                     if (mostRecentSelected.transform.localScale.z > 0.1f)
                         mostRecentSelected.transform.localScale += new Vector3(scaleAmount, scaleAmount, scaleAmount);
                 }
